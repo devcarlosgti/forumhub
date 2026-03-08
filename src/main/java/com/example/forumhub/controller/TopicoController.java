@@ -1,12 +1,17 @@
 package com.example.forumhub.controller;
 
-import com.example.forumhub.domain.topico.DadosCadastroTopico;
+import com.example.forumhub.domain.topico.DadosDetalhamentoTopico;
+import com.example.forumhub.dto.DadosAtualizacaoTopico;
+import com.example.forumhub.dto.DadosCadastroTopico;
+import com.example.forumhub.dto.DadosListagemTopico;
 import com.example.forumhub.domain.topico.Topico;
 import com.example.forumhub.repository.TopicoRepository;
+import com.example.forumhub.service.TopicoService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 @RestController
@@ -16,22 +21,21 @@ public class TopicoController {
     @Autowired
     private TopicoRepository repository;
 
+    @Autowired
+    private TopicoService service;
+
     @PostMapping
-    public void cadastrar(@RequestBody DadosCadastroTopico dados) {
-
-        Topico topico = new Topico(
-                dados.titulo(),
-                dados.mensagem(),
-                dados.autor(),
-                dados.curso()
-        );
-
-        repository.save(topico);
+    public ResponseEntity cadastrar(@RequestBody @Valid DadosCadastroTopico dados) {
+        var topico = service.cadastrar(dados);
+        return ResponseEntity.ok(topico);
     }
 
     @GetMapping
-    public List<Topico> listar() {
-        return repository.findAll();
+    public List<DadosListagemTopico> listar() {
+        return repository.findAll()
+                .stream()
+                .map(DadosListagemTopico::new)
+                .toList();
     }
 
     @GetMapping("/{id}")
@@ -40,20 +44,36 @@ public class TopicoController {
     }
 
     @PutMapping("/{id}")
-    public Topico atualizar(@PathVariable Long id, @RequestBody Topico dados) {
+    public ResponseEntity atualizar(@PathVariable Long id,
+                                    @RequestBody DadosAtualizacaoTopico dados) {
 
-        Topico topico = repository.findById(id).orElseThrow();
+        var topico = repository.getReferenceById(id);
 
-        topico.setTitulo(dados.getTitulo());
-        topico.setMensagem(dados.getMensagem());
-        topico.setAutor(dados.getAutor());
-        topico.setCurso(dados.getCurso());
+        if (dados.titulo() != null) {
+            topico.setTitulo(dados.titulo());
+        }
 
-        return repository.save(topico);
+        if (dados.mensagem() != null) {
+            topico.setMensagem(dados.mensagem());
+        }
+
+        if (dados.autor() != null) {
+            topico.setAutor(dados.autor());
+        }
+
+        if (dados.curso() != null) {
+            topico.setCurso(dados.curso());
+        }
+
+        return ResponseEntity.ok(new DadosDetalhamentoTopico(topico));
     }
 
     @DeleteMapping("/{id}")
-    public void deletar(@PathVariable Long id) {
+    public ResponseEntity excluir(@PathVariable Long id) {
+
         repository.deleteById(id);
+
+        return ResponseEntity.noContent().build();
     }
+
 }

@@ -1,4 +1,4 @@
-package com.example.forumhub.domain.topico;
+package com.example.forumhub.dto;
 
 import jakarta.validation.constraints.NotBlank;
 
