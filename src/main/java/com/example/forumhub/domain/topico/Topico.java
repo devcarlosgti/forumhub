@@ -1,5 +1,6 @@
 package com.example.forumhub.domain.topico;
 
+
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -7,6 +8,12 @@ import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "topicos")
+
+//@Getter
+//@Setter
+//@NoArgsConstructor
+@AllArgsConstructor
+@EqualsAndHashCode(of = "id")
 public class Topico {
 
     @Id
@@ -17,7 +24,8 @@ public class Topico {
 
     private String mensagem;
 
-    private LocalDateTime dataCriacao;
+    @Column(name = "data_criacao")
+    private LocalDateTime dataCriacao = LocalDateTime.now();
 
     private String autor;
 

@@ -1,6 +1,6 @@
 package com.example.forumhub.controller;
 
-import com.example.forumhub.domain.topico.DadosDetalhamentoTopico;
+import com.example.forumhub.dto.DadosDetalhamentoTopico;
 import com.example.forumhub.dto.DadosAtualizacaoTopico;
 import com.example.forumhub.dto.DadosCadastroTopico;
 import com.example.forumhub.dto.DadosListagemTopico;
@@ -26,12 +26,15 @@ public class TopicoController {
 
     @PostMapping
     public ResponseEntity cadastrar(@RequestBody @Valid DadosCadastroTopico dados) {
+
         var topico = service.cadastrar(dados);
-        return ResponseEntity.ok(topico);
+
+        return ResponseEntity.ok(new DadosDetalhamentoTopico(topico));
     }
 
     @GetMapping
     public List<DadosListagemTopico> listar() {
+
         return repository.findAll()
                 .stream()
                 .map(DadosListagemTopico::new)
@@ -39,8 +42,11 @@ public class TopicoController {
     }
 
     @GetMapping("/{id}")
-    public Topico buscarPorId(@PathVariable Long id) {
-        return repository.findById(id).orElseThrow();
+    public ResponseEntity detalhar(@PathVariable Long id) {
+
+        var topico = repository.getReferenceById(id);
+
+        return ResponseEntity.ok(new DadosDetalhamentoTopico(topico));
     }
 
     @PutMapping("/{id}")
@@ -49,21 +55,10 @@ public class TopicoController {
 
         var topico = repository.getReferenceById(id);
 
-        if (dados.titulo() != null) {
-            topico.setTitulo(dados.titulo());
-        }
-
-        if (dados.mensagem() != null) {
-            topico.setMensagem(dados.mensagem());
-        }
-
-        if (dados.autor() != null) {
-            topico.setAutor(dados.autor());
-        }
-
-        if (dados.curso() != null) {
-            topico.setCurso(dados.curso());
-        }
+        if (dados.titulo() != null) topico.setTitulo(dados.titulo());
+        if (dados.mensagem() != null) topico.setMensagem(dados.mensagem());
+        if (dados.autor() != null) topico.setAutor(dados.autor());
+        if (dados.curso() != null) topico.setCurso(dados.curso());
 
         return ResponseEntity.ok(new DadosDetalhamentoTopico(topico));
     }
@@ -75,5 +70,4 @@ public class TopicoController {
 
         return ResponseEntity.noContent().build();
     }
-
 }
