@@ -17,7 +17,7 @@ Este projeto foi desenvolvido como prática de backend focada em **APIs REST seg
 * Spring Data JPA
 * Hibernate
 * MySQL
-* Swagger / OpenAPI
+* Swagger
 
 ---
 
