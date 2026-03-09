@@ -24,13 +24,32 @@ public class SecurityConfigurations {
         return http
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/login").permitAll()
+                        .requestMatchers(
+                                "/login",
+                                "/v3/api-docs/**",
+                                "/swagger-ui/**",
+                                "/swagger-ui.html"
+                        ).permitAll()
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(securityFilter,
                         UsernamePasswordAuthenticationFilter.class)
                 .build();
     }
+
+//    @Bean
+//    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+//
+//        return http
+//                .csrf(csrf -> csrf.disable())
+//                .authorizeHttpRequests(auth -> auth
+//                        .requestMatchers("/login").permitAll()
+//                        .anyRequest().authenticated()
+//                )
+//                .addFilterBefore(securityFilter,
+//                        UsernamePasswordAuthenticationFilter.class)
+//                .build();
+//    }
 
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration configuration) throws Exception {
